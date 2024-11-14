@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 class Face extends SmsJFrame implements ListSelectionListener {
-    JButton tianjia,shanchu,xiugai,chaxun;
+    JButton tianjia,shanchu,xiugai,chaxun,allclear;
     String[] title;
     TableModel tableModel;
     JTable table;
@@ -25,16 +25,18 @@ class Face extends SmsJFrame implements ListSelectionListener {
         //添加菜单
         setMenuBar(new shareMenu(this));
         //添加控件
-        tianjia=new JButton("添    加");shanchu=new JButton("删    除");xiugai=new JButton("修    改");chaxun=new JButton("查    询");
+        allclear=new JButton("清    空");tianjia=new JButton("添    加");shanchu=new JButton("删    除");xiugai=new JButton("修    改");chaxun=new JButton("查    询");
+        allclear.setBounds(350,40,125,30);
         chaxun.setBounds(350,90,125,30);
         tianjia.setBounds(350,140,125,30);
         shanchu.setBounds(350,190,125,30);
         xiugai.setBounds(350,240,125,30);
+        allclear.addActionListener(this);
         chaxun.addActionListener(this);
         tianjia.addActionListener(this);
         shanchu.addActionListener(this);
         xiugai.addActionListener(this);
-        add(chaxun);add(tianjia);add(shanchu);add(xiugai);
+        add(allclear);add(chaxun);add(tianjia);add(shanchu);add(xiugai);
 
         //设置表格格式
         this.title=title;
@@ -63,6 +65,14 @@ class Face extends SmsJFrame implements ListSelectionListener {
         }
     }
 
+    void allclearFunction(){
+        String[][] str=new String[1][title.length];
+        for(int i=0;i<title.length;i++){
+            str[0][i]="";
+        }
+        upDataTableModel(str);
+    }
+
     static String createInquireSQL(String zhi,String biao,String tiaojian){
         return "select "+zhi+" from "+biao+" where "+tiaojian;
     }
@@ -81,10 +91,10 @@ class Face extends SmsJFrame implements ListSelectionListener {
 
     static boolean sendSQL(String sql, Component component){
         if(Sms.SendMessage(sql)){
-            JOptionPane.showMessageDialog(component, "成功");
+            alert(component, "成功");
             return true;
         }else{
-            JOptionPane.showMessageDialog(component, "失败");
+            alert(component, "失败");
         }
         return false;
     }
@@ -103,6 +113,13 @@ class SmsJFrame extends JFrame implements ActionListener{
         super(name);
         ImageIcon imageIcon=new ImageIcon(this.getClass().getResource("/tubiao.png"));
         this.setIconImage(imageIcon.getImage());
+    }
+
+    //如果组件为空则不输出消息
+    static void alert(Component component, String message){
+        if(component!=null){
+            JOptionPane.showMessageDialog(component,message);
+        }
     }
 
     public void actionPerformed(ActionEvent e) {

@@ -18,7 +18,10 @@ class StudentFace extends Face {
     public void actionPerformed(ActionEvent e) {
         Object obj=e.getSource();
 
-        if(obj==chaxun){
+        if(obj==allclear){
+            allclearFunction();
+        }
+        else if(obj==chaxun){
             if(chaxunFunction((String) tableModel.getValueAt(0,0), (String) tableModel.getValueAt(0,1), (String) tableModel.getValueAt(0,2),this))
                 upDataTableModel(Sms.getstr(title.length));
             Sms.closewindow();
@@ -29,7 +32,7 @@ class StudentFace extends Face {
         }
         else if(obj==shanchu){
             if(selectrow==-1){
-                JOptionPane.showMessageDialog(this, "您还没选择需要删除的学生信息");
+                alert(this, "您还没选择需要删除的学生信息");
             }else {
                 if(shanchuFunction(saveid,this)) {
                     //同步信息
@@ -41,7 +44,7 @@ class StudentFace extends Face {
         }
         else if(obj==xiugai){
             if(selectrow==-1){
-                JOptionPane.showMessageDialog(this, "您还没选择需要修改的学生信息");
+                alert(this, "您还没选择需要修改的学生信息");
             }else {
                 if(xiugaiFunction((String) tableModel.getValueAt(selectrow,0), (String) tableModel.getValueAt(selectrow,1), (String) tableModel.getValueAt(selectrow,2),saveid,this)){
                     //同步信息
@@ -52,7 +55,7 @@ class StudentFace extends Face {
         }
         else if(obj==chengji){
             if(selectrow==-1){
-                JOptionPane.showMessageDialog(this, "请选择查询的目标！");
+                alert(this, "请选择查询的目标！");
             }else{
                 chengjiFunction((String) tableModel.getValueAt(selectrow,0));
             }
@@ -70,15 +73,18 @@ class StudentFace extends Face {
         if(!sx.isEmpty())
             tiaojian=tiaojian+"Sx='"+ sx +"' and ";
         if(tiaojian.isEmpty()){
-            JOptionPane.showMessageDialog(component, "请填写查询的目标！");
+            Sms.SendMessage("select * from S order by Sno asc");
+            if(Sms.getrsnext())
+                return true;
+            else
+                alert(component,"无信息");
         }else {
             tiaojian = tiaojian.substring(0, tiaojian.length() - 5) + " order by Sno asc";
             Sms.SendMessage(createInquireSQL("*", "S", tiaojian));
-            if (Sms.getrsnext()){
+            if (Sms.getrsnext())
                 return true;
-            } else {
-                JOptionPane.showMessageDialog(component, "这类选课信息不存在！");
-            }
+            else
+                alert(component, "这类学生信息不存在！");
         }
         return false;
     }
@@ -86,17 +92,17 @@ class StudentFace extends Face {
     boolean tianjiaFunction(String sno,String sname,String sx, Component component){
         String tiaojian="";
         if(sno.isEmpty()) {
-            JOptionPane.showMessageDialog(component,"学生信息请填满再录入！" );
-        }else if (chaxunFunction(sno,"","",component)) {
+            alert(component,"学生信息请填满再录入！" );
+        }else if (chaxunFunction(sno,"","",null)) {
             //查询是否已有学号
-            JOptionPane.showMessageDialog(component, "该学号已存在，无法添加");
+            alert(component, "该学号已存在，无法添加");
         }else{
             if(!sname.isEmpty())
-                tiaojian=",'"+sname+"'";
+                tiaojian=tiaojian+",'"+sname+"'";
             if(!sx.isEmpty())
-                tiaojian=",'"+tiaojian+sx+"'";
+                tiaojian=tiaojian+",'"+sx+"'";
             if(tiaojian.isEmpty()){
-                JOptionPane.showMessageDialog(component,"学生信息请填满再录入！" );
+                alert(component,"学生信息请填满再录入！" );
             }else{
                 tiaojian="'"+sno+"'"+tiaojian;
                 return sendSQL(createAddSQL("S",tiaojian),component);
@@ -111,14 +117,14 @@ class StudentFace extends Face {
 
     boolean xiugaiFunction(String sno,String sname,String sx,String Osno, Component component){
         if(sno.isEmpty()||sname.isEmpty()||sx.isEmpty()){
-            JOptionPane.showMessageDialog(component,"学生信息填满才能修改！" );
+            alert(component,"学生信息填满才能修改！" );
         }else if(Osno.equals(sno)){
             //是否更换学号
             //修改信息
             return sendSQL(createUpDataSQL("S","Sno='"+sno+"',Sname='"+ sname +"',Sx='"+ sx +"'","Sno='"+Osno+"'"),component);
-        }else if(chaxunFunction(sno,"","",component)){
+        }else if(chaxunFunction(sno,"","",null)){
             //验证表中是否已有学号
-            JOptionPane.showMessageDialog(component,"已存在此学号学生" );
+            alert(component,"已存在此学号学生" );
         }else{
             //修改信息
             return sendSQL(createUpDataSQL("S","Sno='"+sno+"',Sname='"+ sname +"',Sx='"+ sx +"'","Sno='"+Osno+"'"),component);

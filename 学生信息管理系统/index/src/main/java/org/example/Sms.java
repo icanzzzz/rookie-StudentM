@@ -11,8 +11,12 @@ public class Sms {
     static Music musicBackground;
     static Connection SMconnection;
     public static void main(String[] args) {
+        selectFace=new SelectFace();
+        selectFace.setVisible(true);
         SMconnection=Connect();
-        userface=new Userface();
+        if(SMconnection!=null){
+            userface=new Userface();
+        }
     }
 
     //创建管理系统
@@ -38,6 +42,7 @@ public class Sms {
 
     //发送SQL语句
     synchronized static boolean SendMessage(String sql){
+        rsnext=false;
         if (SMconnection != null) {
             try {
                 stmt = SMconnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);

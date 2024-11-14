@@ -16,7 +16,10 @@ class SelectFace extends Face {
     public void actionPerformed(ActionEvent e) {
         Object obj = e.getSource();
 
-        if (obj == chaxun) {
+        if(obj==allclear){
+            allclearFunction();
+        }
+        else if (obj == chaxun) {
             if(chaxunFunction((String) tableModel.getValueAt(0, 0), (String) tableModel.getValueAt(0, 2), (String) tableModel.getValueAt(0, 4),this))
                 upDataTableModel(Sms.getstr(title.length));
             Sms.closewindow();
@@ -27,7 +30,7 @@ class SelectFace extends Face {
         }
         else if (obj == shanchu) {
             if(selectrow==-1){
-                JOptionPane.showMessageDialog(this, "您还没选择需要删除的选课信息");
+                alert(this, "您还没选择需要删除的选课信息");
             }else{
                 if(shanchuFunction(saveid,saveid2,this)) {
                     //同步信息
@@ -40,7 +43,7 @@ class SelectFace extends Face {
         }
         else if (obj == xiugai) {
             if(selectrow==-1){
-                JOptionPane.showMessageDialog(this, "您还没选择需要修改的选课信息");
+                alert(this, "您还没选择需要修改的选课信息");
             }else{
                 if(xiugaiFunction((String) tableModel.getValueAt(selectrow,0), (String) tableModel.getValueAt(selectrow,2), (String) tableModel.getValueAt(selectrow,4),saveid,saveid2,this)){
                     //同步信息
@@ -58,32 +61,33 @@ class SelectFace extends Face {
         if (!sno.isEmpty()) tiaojian = tiaojian + "S.Sno='" + sno + "' and ";
         if (!c.isEmpty()) tiaojian = tiaojian + "SC.C='" + c + "' and ";
         if (tiaojian.isEmpty()) {
-            JOptionPane.showMessageDialog(component, "请填写查询的目标！");
-        } else {
-            tiaojian = tiaojian + "SC.Cno=C.Cno and SC.Sno=S.Sno order by Cno asc,sno asc";//每个结果集都会满足学号学号对应学号，课号对应课号
-            Sms.SendMessage(createInquireSQL("C.*,S.Sno,S.Sname,SC.C", "C,S,SC", tiaojian));
-            if (Sms.getrsnext()){
+            Sms.SendMessage(createInquireSQL("C.*,S.Sno,S.Sname,SC.C","C,S,SC","SC.Cno=C.Cno and SC.Sno=S.Sno order by Cno asc,Sno asc"));
+            if(Sms.getrsnext())
                 return true;
-            } else {
-                JOptionPane.showMessageDialog(component, "这类选课信息不存在！");
-            }
+            else
+                alert(component, "无信息");
+        } else {
+            tiaojian = tiaojian + "SC.Cno=C.Cno and SC.Sno=S.Sno order by Cno asc,Sno asc";//每个结果集都会满足学号学号对应学号，课号对应课号
+            Sms.SendMessage(createInquireSQL("C.*,S.Sno,S.Sname,SC.C", "C,S,SC", tiaojian));
+            if (Sms.getrsnext())
+                return true;
+            else
+                alert(component, "这类选课信息不存在！");
         }
         return false;
     }
 
     boolean tianjiaFunction(String cno,String sno, String c, Component component){
         if (cno.isEmpty() || sno.isEmpty() || c.isEmpty()) {
-            JOptionPane.showMessageDialog(component, "选课信息请填满再录入！");
+            alert(component, "选课信息请填满再录入！");
         } else {
-            if (chaxunFunction(cno, sno, "", component)) {
+            if (chaxunFunction(cno, sno, "", null)) {
                 //判断表中是否已有对应成绩
-                JOptionPane.showMessageDialog(component, "该成绩已存在，无法添加");
+                alert(component, "该成绩已存在，无法添加");
             } else if (!Sms.courseFace.chaxunFunction(cno, "",component)) {
                 //判断表中是否有这门课
-                JOptionPane.showMessageDialog(component, "不存在这门课");
             } else if (!Sms.studentFace.chaxunFunction(sno, "", "",component)) {
                 //判断是否有这个学生
-                JOptionPane.showMessageDialog(component, "不存在这个学生");
             } else {
                 return sendSQL(createAddSQL("SC", "'" + cno + "','" + sno + "','" + c + "'"),component);
             }
@@ -97,20 +101,18 @@ class SelectFace extends Face {
 
     boolean xiugaiFunction(String cno,String sno, String c,String Ocno,String Osno, Component component){
         if (cno.isEmpty() || sno.isEmpty() || c.isEmpty()) {
-            JOptionPane.showMessageDialog(component, "选课信息填满才能修改！");
+            alert(component, "选课信息填满才能修改！");
         } else if (Ocno.equals(cno) && Osno.equals(sno)) {
             //是否更换学号以及课号
             return sendSQL(createUpDataSQL("SC","Cno='" + cno + "',Sno='" + sno + "',C='" + c + "'","Cno='" + Ocno + "' and Sno='" + Osno + "'"),component);
         } else {
-            if (chaxunFunction(cno,sno,"",component)) {
+            if (chaxunFunction(cno,sno,"",null)) {
                 //验证表中是否已有该信息
-                JOptionPane.showMessageDialog(component, "已存在此选课信息");
+                alert(component, "已存在此选课信息");
             } else if (!Sms.courseFace.chaxunFunction(cno,"",component)) {
                 //判断是否有这门课
-                JOptionPane.showMessageDialog(component, "不存在这门课");
             } else if (!Sms.studentFace.chaxunFunction(sno,"","",component)) {
                 //判断是否有这个学生
-                JOptionPane.showMessageDialog(component, "不存在这个学生");
             } else {
                 return sendSQL(createUpDataSQL("SC","Cno='" + cno + "',Sno='" + sno + "',C='" + c + "'","Cno='" + Ocno + "' and Sno='" + Osno + "'"),component);
             }
