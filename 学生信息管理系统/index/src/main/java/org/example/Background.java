@@ -11,8 +11,16 @@ import java.net.URL;
 
 class Background extends JLabel {
     Background(int width,int height){
-//            System.out.println(this.getClass().getResource("/12.jpg"));   //测试图片路径
+//        System.out.println(this.getClass().getResource("/12.jpg"));   //测试图片路径
         URL resource=this.getClass().getResource("/12.jpg");    //图片路径
+        createBackground(resource,width,height);
+    }
+
+    Background(URL resource,int width,int height){
+        createBackground(resource,width,height);
+    }
+
+    void createBackground(URL resource,int width,int height){
         ImageIcon icon=new ImageIcon(resource); //将图片传入图标
         icon.setImage(icon.getImage().getScaledInstance(width,height,Image.SCALE_DEFAULT)); //放缩图片大小
         setIcon(icon);  //将图标传入标签

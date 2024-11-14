@@ -11,8 +11,6 @@ public class Sms {
     static Music musicBackground;
     static Connection SMconnection;
     public static void main(String[] args) {
-        selectFace=new SelectFace();
-        selectFace.setVisible(true);
         SMconnection=Connect();
         if(SMconnection!=null){
             userface=new Userface();
@@ -43,6 +41,7 @@ public class Sms {
     //发送SQL语句
     synchronized static boolean SendMessage(String sql){
         rsnext=false;
+        rowcount=0;
         if (SMconnection != null) {
             try {
                 stmt = SMconnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -85,19 +84,27 @@ public class Sms {
 
     //获得结果集所编成的字符串数组，column是列数
     synchronized static String[][] getstr(int column){
-        String[][] str=new String[rowcount][column];
-        ResultSet rsdd=rs;
-        try {
-            for (int i = 0; i < rowcount; i++) {
-                for (int j = 0; j < column; j++) {
-                    str[i][j] = rsdd.getString(j + 1);
+        String[][] str;
+        if(rowcount!=0) {
+            str = new String[rowcount][column];
+            ResultSet rsdd = rs;
+            try {
+                for (int i = 0; i < rowcount; i++) {
+                    for (int j = 0; j < column; j++) {
+                        str[i][j] = rsdd.getString(j + 1);
+                    }
+                    //进入下结果集下一行
+                    rsdd.next();
                 }
-                //进入下结果集下一行
-                rsdd.next();
+            } catch (SQLException e) {
+                System.out.print("转化字符串失败：" + e.getMessage());
+                return null;
             }
-        }catch(SQLException e){
-            System.out.print("转化字符串失败："+e.getMessage());
-            return null;
+        }else{
+            str=new String[1][column];
+            for(int i=0;i<column;i++){
+                str[0][i]="";
+            }
         }
         return str;
     }

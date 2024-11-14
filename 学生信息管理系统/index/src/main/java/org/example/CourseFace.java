@@ -133,7 +133,7 @@ class CourseFace extends Face {
 
     void chengjiFunction(String cno) {
         Sms.selectFace.setVisible(true);
-        if (Sms.selectFace.chaxunFunction(cno, "", "",this))
-            Sms.selectFace.upDataTableModel(Sms.getstr(5));
+        Sms.selectFace.chaxunFunction(cno, "", "",this);
+        Sms.selectFace.upDataTableModel(Sms.getstr(5));
     }
 }

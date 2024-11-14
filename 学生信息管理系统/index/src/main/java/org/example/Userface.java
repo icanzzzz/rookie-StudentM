@@ -14,19 +14,25 @@ public class Userface extends SmsJFrame{
     //构造窗口
     Userface() {
         super("系统登录");
-        setSize( 280, 150);//设置窗口的大小
+        setSize( 636, 440);//设置窗口的大小
         setLocationRelativeTo(null);//设置位置
-        setLayout(new FlowLayout(FlowLayout.CENTER));//设置容器布局
+        setLayout(null);//设置容器布局
         // 控件初始化
         SystemUser = new JLabel("用户名：");
         SystemPassword = new JLabel("密码：");
-        Font Ft = new Font("Serif", Font.PLAIN, 24);
+        Font Ft = new Font("Serif", Font.PLAIN, 20);
         SystemUser.setFont(Ft);
         SystemPassword.setFont(Ft);
         SUField = new JTextField(12);
         SPField = new JPasswordField(12);
         Load = new JButton("登录");
         GetOut = new JButton("退出");
+        SystemUser.setBounds(430,100,150,20);
+        SUField.setBounds(430,130,150,30);
+        SystemPassword.setBounds(430,170,150,20);
+        SPField.setBounds(430,200,150,30);
+        Load.setBounds(430,260,60,30);
+        GetOut.setBounds(520,260,60,30);
         Load.addActionListener(this);
         //设定点击退出按钮后退出程序
         GetOut.addActionListener(this);
@@ -37,6 +43,7 @@ public class Userface extends SmsJFrame{
         add(SPField);
         add(Load);
         add(GetOut);
+        add(new Background(this.getClass().getResource("/fengmian.jpg"),400,400));
         setVisible(true);
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);//这个默认关闭方式甚至会关闭整个主程序
@@ -75,7 +82,9 @@ public class Userface extends SmsJFrame{
                         JOptionPane.showMessageDialog(this,"密码错误");
                     }
                 }
-                else{JOptionPane.showMessageDialog(this,"用户名错误");}
+                else{
+                    JOptionPane.showMessageDialog(this,"用户名错误");
+                }
                 Sms.closewindow();
             }
         }else if(obj==GetOut){
